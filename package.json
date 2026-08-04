@@ -1,6 +1,6 @@
 {
   "name": "unoflow-l",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Client-side resolver for brands and app logos",
   "main": "dist/logos.cjs.js",
   "module": "dist/logos.esm.js",
@@ -35,5 +35,8 @@
     "unobits"
   ],
   "author": "Jem-Technologies",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "terser": "^5.49.0"
+  }
 }
