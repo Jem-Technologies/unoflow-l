@@ -46,7 +46,7 @@ Logos.apply(img, 'github');
 ### 3. Usage in Plain HTML (CDN)
 
 ```html
-<script src="https://unpkg.com/unoflow-l@latest/dist/logos.min.js"><script>
+<script src="https://unpkg.com/unoflow-l@latest/dist/logos.min.js"></script>
 
 <script>
   // Get logo URL directly
