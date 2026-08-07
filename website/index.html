@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UnoFlow-L — Zero-Latency Logo Resolver with Manifest Caching</title>
+
+  <!-- SEO & Social Meta -->
+  <meta name="description" content="Client-side brand & app logo resolver with automatic IndexedDB manifest caching and long CDN cache. Zero-latency delivery out of the box.">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Inter Font from Google Fonts for Stripe-like developer feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Core Theme Initialization Script (Avoid Flash of White/Black) -->
+  <script>
+    (function() {
+      const theme = localStorage.getItem('unoflow-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/website/styles/variables.css">
+  <link rel="stylesheet" href="/website/styles/base.css">
+  <link rel="stylesheet" href="/website/styles/layout.css">
+  <link rel="stylesheet" href="/website/styles/components.css">
+  <link rel="stylesheet" href="/website/styles/animations.css">
+  <link rel="stylesheet" href="/website/styles/pages.css">
+</head>
+<body>
+  <!-- Global App Layout -->
+  <div id="app-container">
+    <!-- Navbar Component Container -->
+    <header id="app-header"></header>
+
+    <!-- Main Dynamic Content (SPA Routing Container) -->
+    <main id="app-content"></main>
+
+    <!-- Footer Component Container -->
+    <footer id="app-footer"></footer>
+  </div>
+
+  <!-- Main SPA Application Shell (ES Module entry point) -->
+  <script type="module">
+    import { initRouter } from '/website/lib/router.js';
+    import { initTheme } from '/website/lib/theme.js';
+    import { renderNavbar } from '/website/components/navbar.js';
+    import { renderFooter } from '/website/components/footer.js';
+
+    // Boot App Components
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderNavbar(document.getElementById('app-header'));
+      renderFooter(document.getElementById('app-footer'));
+      initRouter(document.getElementById('app-content'));
+    });
+  </script>
+</body>
+</html>
