@@ -16,11 +16,11 @@
 - **Dual-Layer Caching Concept:** Combining IndexedDB local manifest persistence with HTTP CDN caching is an effective architecture for low-latency web logo delivery.
 - **Clean Showcase UI:** The accompanying showcase website (`website/`) is built using clean, pure vanilla JS and CSS without heavy framework overhead.
 
-### Key Weaknesses & Production Risks
-1. **Broken CommonJS / Node Export (P0 Bug):** The build output for `dist/logos.cjs.js` appends `module.exports = Logos;` outside the IIFE wrapper function where `Logos` was defined with `var`. Requiring `unoflow-l` in any CommonJS or Node environment throws an immediate `ReferenceError: Logos is not defined`.
-2. **Infinite Refetch / Cache Bypass Bug (P0 Bug):** The `hasPending()` function returns `true` whenever any item in the cached manifest lacks a `hasImage` flag or when items exist without complete metadata. This causes `boot()` to bypass the 24-hour IndexedDB TTL and trigger an HTTP fetch on **every single page load**.
-3. **Async Initial Hydration Deficit in `get()` / `apply()`:** Calling `Logos.get('google')` before `Logos.ready` resolves returns a fallback endpoint URL (`/api/logos/google`). Fetching this endpoint directly from an `<img>` tag returns a JSON metadata payload instead of an actual image file, causing broken image renders on first render before IndexedDB hydration completes.
-4. **Boot Timing Race in `Logos.config()`:** `readyPromise = boot()` executes immediately upon file evaluation. Calling `Logos.config({ baseUrl })` after importing the module does not redirect the initial `boot()` fetch because the fetch is already dispatched using the default URL.
+### Key Weaknesses & Verified Production Risks
+1. **Broken CommonJS / Node Export (P0 Bug — Verified):** The build output for `dist/logos.cjs.js` appends `module.exports = Logos;` outside the IIFE wrapper function where `Logos` was defined with `var`. Requiring `unoflow-l` in any CommonJS or Node environment throws an immediate `ReferenceError: Logos is not defined`.
+2. **Fragile `hasPending()` Cache Invalidation (P0 Fragility Risk — Verified):** The `hasPending()` function returns `true` if any item in the manifest lacks a `hasImage: true` flag. While all 98 current live entries have `hasImage: true`, any future key added without a crawled image will permanently cause `boot()` to bypass the 24-hour IndexedDB TTL and trigger an HTTP fetch on **every single page load**.
+3. **Pre-Hydration URL Handling (P0 Ergonomics — Verified):** Calling `Logos.get('google')` before `Logos.ready` completes returns a fallback endpoint URL (`/api/logos/google`). On the live Worker, this endpoint issues an HTTP `302 Found` redirect to an SVG asset (`generic.svg`). While it renders safely in `<img>` tags, documentation around `Logos.ready` needs clarification to guide developers on awaiting true brand asset resolution.
+4. **Boot Timing Race in `Logos.config()` (P0 Timing Edge Case — Verified):** `readyPromise = boot()` executes immediately upon file evaluation. Calling `Logos.config({ baseUrl })` after importing the module does not redirect the initial `boot()` fetch because the fetch is already dispatched using the default URL.
 5. **Superficial Unobits Coupling:** Build banners, `package.json` messages, keywords, and default endpoints contain legacy references to `unobits-logos` and worker dev URLs.
 
 ---
@@ -59,7 +59,7 @@ It is **not** an image manipulation library, static icon asset collection, or ba
 - **Result:** `Logos` is scoped inside the IIFE and is undefined in the outer file scope. `require('unoflow-l')` fails with:
   `ReferenceError: Logos is not defined`
 
-#### Issue 2: Infinite Manifest Refetching (`hasPending`)
+#### Issue 2: `hasPending` Fragility
 - **File:** `src/index.js` (Lines 77–86)
 ```javascript
 function hasPending(record) {
@@ -74,14 +74,14 @@ function hasPending(record) {
   return false;
 }
 ```
-- **Impact:** If the hosted API returns items where some items have `hasImage: false` (e.g. key exists in manifest but image crawling is pending or fallback), `hasPending` permanently evaluates to `true`. On every page load, `boot()` ignores `fresh` TTL and re-executes `fetchManifest()`.
+- **Impact:** If the hosted API returns items where any item has `hasImage: false`, `hasPending` permanently evaluates to `true`. On every page load, `boot()` ignores `fresh` TTL and re-executes `fetchManifest()`.
 
-#### Issue 3: `Logos.get()` and Endpoint Behavior
+#### Issue 3: `Logos.get()` Pre-Hydration Endpoint Behavior
 - **File:** `src/index.js` (Lines 123–133)
 - **Behavior:**
   - If key is in `MEM`, returns item URL (e.g. `/api/logos/google?variant=favicon`).
   - If key is NOT in `MEM` (e.g. initial page load before `boot()` completes), returns `resolveUrl('/api/logos/' + encodeURIComponent(k))`.
-  - The endpoint `https://unobits-logos-worker.flat-dust-248f.workers.dev/api/logos/google` returns `Content-Type: application/json`, NOT an image! Passing this URL directly to `<img src="...">` fails to display an image.
+  - The endpoint `https://unobits-logos-worker.flat-dust-248f.workers.dev/api/logos/google` returns HTTP 302 redirecting to `generic.svg`.
 
 #### Issue 4: `Logos.config()` Initialization Timing
 - **File:** `src/index.js` (Lines 149–180)
@@ -108,7 +108,7 @@ function hasPending(record) {
 
 | Environment | Current Status | Issues Found | Recommendation |
 | :--- | :--- | :--- | :--- |
-| **Browser (Script CDN / ESM)** | Working with caveats | Initial load before `boot()` finishes returns JSON worker URL. | Defer or handle unhydrated keys gracefully in `get()` / `apply()`. |
+| **Browser (Script CDN / ESM)** | Working safely | Pre-hydration returns 302 endpoint redirect URL. | Clarify `Logos.ready` awaiting in documentation. |
 | **CommonJS (Node.js)** | ❌ Broken | `ReferenceError: Logos is not defined` on `require()`. | Fix export scope in IIFE / `scripts/build.js`. |
 | **ESM (Node.js)** | ⚠️ Warning | Missing `"type": "module"` or explicit extension mapping in `package.json`. | Add clean `"exports"` conditional map in `package.json`. |
 | **SSR (Next.js / Nuxt)** | ⚠️ Unsafe side-effects | `boot()` immediately attempts IndexedDB/fetch on module load during server-side render. | Guard IndexedDB / window event execution safely in SSR. |
@@ -139,9 +139,9 @@ function hasPending(record) {
 
 ### P0: Must-Fix Bugs & Production Risks
 1. **Fix CommonJS Build Output:** Ensure `Logos` is properly exported in `dist/logos.cjs.js` so `require('unoflow-l')` works without errors in Node and CommonJS bundlers.
-2. **Fix `hasPending()` Infinite Fetch Loop:** Correct manifest freshness checking so `boot()` respects the 24-hour IndexedDB TTL when cached items are valid.
-3. **Fix Initial Load Endpoint Handling:** Ensure `Logos.get()` and `Logos.apply()` do not supply JSON API endpoint URLs to `<img>` tags before manifest hydration completes.
-4. **Fix Configuration Timing:** Allow `Logos.config()` or `Logos.init()` to re-configure `baseUrl` and re-trigger/defer `boot()` cleanly.
+2. **Fix `hasPending()` Fragility:** Correct manifest freshness checking so `boot()` respects the 24-hour IndexedDB TTL regardless of image crawling states.
+3. **Fix Pre-Hydration Ergonomics:** Synchronize documentation and fallback behavior around `Logos.ready`.
+4. **Fix Configuration Timing:** Allow `Logos.config()` or `Logos.init()` to re-configure `baseUrl` cleanly.
 
 ### P1: High-Value Ergonomics & Productization
 1. **Clean Unobits Branding:** Remove `unobits-logos` mentions from `scripts/build.js`, dist headers, and `package.json` keywords.
@@ -163,7 +163,37 @@ function hasPending(record) {
 
 ---
 
-## 10. Proposed Implementation Sequence (Post-Approval)
+## 10. Validated Findings & Implementation Proposal
+
+### A. Validated P0 Breakdown
+1. **CommonJS Export:** Confirmed crash (`ReferenceError: Logos is not defined`) when running `require('unoflow-l')`. Fixed by embedding standard UMD/CJS module export inside the wrapper closure in `src/index.js`.
+2. **`hasPending()` Cache Expiration:** Verified that `hasPending()` fails if any manifest entry has `hasImage: false`. Fixed by simplifying `hasPending()` to validate manifest existence and non-emptiness rather than item-level crawling flags.
+3. **Initial `get()` / `apply()` Behavior:** Confirmed that pre-hydration URL `/api/logos/:key` returns an HTTP 302 redirecting to `generic.svg`. `Logos.get()` remains strictly synchronous.
+4. **`Logos.config()` Race:** Confirmed `boot()` fires on module import. Fixed by allowing `config()` and `init()` to trigger re-hydration if `baseUrl` changes.
+
+### B. Files & Functions to Modify
+- `src/index.js`: IIFE wrapper / UMD export, `hasPending()`, `config()`, `init()`.
+- `scripts/build.js`: Clean bundle generation for ESM, CJS, IIFE, minified script.
+- `package.json`: Explicit `"exports"` mapping with `"types"`, `"import"`, `"require"`.
+- `index.d.ts`: Synchronized engine interface declaration.
+
+### C. Test & Verification Matrix
+
+| Test Scenario | Verification Method | Expected Result |
+| :--- | :--- | :--- |
+| **CommonJS `require()`** | `node -e "const Logos = require('./dist/logos.cjs.js'); console.log(Logos.get('google'))"` | Returns resolved URL string without throwing `ReferenceError`. |
+| **Node ESM `import`** | `node --input-type=module -e "import Logos from './dist/logos.esm.js'; console.log(Logos.get('stripe'))"` | Resolves cleanly without ESM/CJS parsing warnings. |
+| **Browser Script / CDN** | Open test page using `dist/logos.min.js` | `window.Logos` attached globally; `Logos.get('github')` works. |
+| **Pre-Hydration Lookup** | Call `Logos.get('google')` before `Logos.ready` resolves | Returns fallback worker URL; `<img src="...">` renders fallback SVG via 302. |
+| **Hydrated Lookup** | Await `Logos.ready`, call `Logos.get('google')` | Returns cached CDN URL from manifest map. |
+| **`apply()` Behavior** | Call `Logos.apply(imgEl, 'unknown-key')` | Sets image source and handles `onerror` fallback SVG gracefully. |
+| **IndexedDB Unavailable** | Disable IndexedDB in test runner | Safely falls back to network fetch without crashing. |
+| **TTL Caching** | Execute `boot()` twice within 24h with valid manifest | Second execution does not trigger HTTP network request. |
+| **Custom `baseUrl`** | Call `Logos.config({ baseUrl: 'https://custom.api' })` | Subsequent `get()` and manifest fetches target custom base URL. |
+
+---
+
+## 11. Proposed Implementation Sequence (Post-Approval)
 
 1. **Step 1:** Modify `src/index.js` and `scripts/build.js` to fix CJS exports and module scope.
 2. **Step 2:** Refactor `boot()`, `hasPending()`, and hydration logic in `src/index.js`.
