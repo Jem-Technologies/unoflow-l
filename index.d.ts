@@ -26,9 +26,10 @@ export interface LogosEngine {
   get(key: string, opts?: LogoOptions): string;
   has(key: string): boolean;
   hasImage(key: string): boolean;
-  apply(imgEl: HTMLImageElement | null, key: string, opts?: LogoOptions): void;
+  apply(imgEl: HTMLElement | null, key: string, opts?: LogoOptions): void;
+  source(): string;
   refresh(force?: boolean): Promise<Record<string, LogoItem> | null>;
-  ready: Promise<Record<string, LogoItem> | null>;
+  readonly ready: Promise<Record<string, LogoItem> | null>;
   readonly GENERIC: string;
 }
 

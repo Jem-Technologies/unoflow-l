@@ -1,7 +1,7 @@
 {
   "name": "unoflow-l",
   "version": "1.0.4",
-  "description": "Client-side resolver for brands and app logos",
+  "description": "Zero-dependency client-side brand and app logo resolver with automatic runtime caching",
   "main": "dist/logos.cjs.js",
   "module": "dist/logos.esm.js",
   "unpkg": "dist/logos.min.js",
@@ -9,9 +9,9 @@
   "types": "index.d.ts",
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "import": "./dist/logos.esm.js",
-      "require": "./dist/logos.cjs.js",
-      "script": "./dist/logos.min.js"
+      "require": "./dist/logos.cjs.js"
     }
   },
   "files": [
@@ -28,12 +28,12 @@
   },
   "keywords": [
     "logos",
+    "brand-logos",
     "favicons",
     "logo-registry",
-    "cloudflare-r2",
-    "brand-logos",
+    "cloudflare-workers",
     "logo-getter",
-    "unobits"
+    "unoflow"
   ],
   "author": "Jem-Technologies",
   "license": "MIT",
