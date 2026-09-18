@@ -2,6 +2,7 @@
 import { renderTerminal } from '/components/terminal.js';
 import { createInteractiveCard } from '/components/card.js';
 import { renderCodeBlock } from '/components/codeblock.js';
+import Logos from '/dist/logos.esm.js';
 
 export function render(container) {
   const section = document.createElement('div');
@@ -52,15 +53,19 @@ export function render(container) {
   showgrid.innerHTML = `
     <h3 style="margin-bottom: var(--space-lg);">Supported Logos & Brands</h3>
     <div class="flex-center gap-lg" style="flex-wrap: wrap; padding: var(--space-md); border: 1px solid var(--border-color); border-radius: var(--radius-lg); background-color: var(--surface-bg);">
-      <div style="text-align: center; width: 60px;"><img src="unoflow.unobits.app/api/logos/google" alt="Google" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Google</div></div>
-      <div style="text-align: center; width: 60px;"><img src="unoflow.unobits.app/api/logos/github" alt="GitHub" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">GitHub</div></div>
-      <div style="text-align: center; width: 60px;"><img src="unoflow.unobits.app/api/logos/stripe" alt="Stripe" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Stripe</div></div>
-      <div style="text-align: center; width: 60px;"><img src="unoflow.unobits.app/api/logos/slack" alt="Slack" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Slack</div></div>
-      <div style="text-align: center; width: 60px;"><img src="unoflow.unobits.app/api/logos/react" alt="React" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">React</div></div>
-      <div style="text-align: center; width: 60px;"><img src="unoflow.unobits.app/api/logos/vercel" alt="Vercel" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Vercel</div></div>
+      <div style="text-align: center; width: 60px;"><img data-logo-key="google" alt="Google" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Google</div></div>
+      <div style="text-align: center; width: 60px;"><img data-logo-key="github" alt="GitHub" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">GitHub</div></div>
+      <div style="text-align: center; width: 60px;"><img data-logo-key="stripe" alt="Stripe" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Stripe</div></div>
+      <div style="text-align: center; width: 60px;"><img data-logo-key="slack" alt="Slack" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Slack</div></div>
+      <div style="text-align: center; width: 60px;"><img data-logo-key="react" alt="React" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">React</div></div>
+      <div style="text-align: center; width: 60px;"><img data-logo-key="vercel" alt="Vercel" style="height:32px; filter: grayscale(1); transition: filter 0.3s;" onmouseover="this.style.filter='none'" onmouseout="this.style.filter='grayscale(1)'"><div style="font-size:0.7rem; color:var(--muted-text); margin-top:5px;">Vercel</div></div>
     </div>
   `;
   section.appendChild(showgrid);
+
+  showgrid.querySelectorAll('[data-logo-key]').forEach((img) => {
+    Logos.apply(img, img.dataset.logoKey);
+  });
 
   // Features Grid
   const featuresHeader = document.createElement('h2');
