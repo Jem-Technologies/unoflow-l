@@ -11,7 +11,7 @@ var Logos = (function (global) {
   var STORE = 'kv';
   var CACHE_KEY = 'manifest';
 
-  var BASE_URL = 'https://unobits-logos-worker.flat-dust-248f.workers.dev';
+  var BASE_URL = 'unoflow.unobits.app';
   var MEM = new Map();
   var SOURCE = 'favicon';
   var loadedTs = 0;

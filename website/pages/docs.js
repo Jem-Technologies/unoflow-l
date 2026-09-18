@@ -53,7 +53,7 @@ export function render(container) {
           <div class="api-interactive-sandbox">
             <strong>Interactive Live Sandbox:</strong>
             <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-sm); margin-bottom: var(--space-sm);">
-              <input type="text" id="cfg-url-input" class="input-field" placeholder="Base URL e.g. https://api.yoursite.com" value="https://unobits-logos-worker.flat-dust-248f.workers.dev">
+              <input type="text" id="cfg-url-input" class="input-field" placeholder="Base URL e.g. https://api.yoursite.com" value="unoflow.unobits.app">
               <input type="number" id="cfg-ttl-input" class="input-field" placeholder="TTL in Ms" value="86400000">
             </div>
             <button id="btn-run-config" class="btn btn-secondary">Apply Configuration</button>

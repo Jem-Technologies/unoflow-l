@@ -111,7 +111,7 @@ export function render(container) {
     for (let i = 0; i < 30; i++) {
       const t0 = performance.now();
       // Force fetching or un-cached url resolution checks
-      await fetch('https://unobits-logos-worker.flat-dust-248f.workers.dev/api/logos/manifest').then(r => r.json());
+      await fetch('unoflow.unobits.app/api/logos/manifest').then(r => r.json());
       coldTimes.push(performance.now() - t0);
     }
     const coldAvg = coldTimes.reduce((a,b)=>a+b, 0) / coldTimes.length;
