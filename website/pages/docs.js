@@ -1,5 +1,5 @@
 // Interactive Documentation Page Component
-import { renderCodeBlock } from '/website/components/codeblock.js';
+import { renderCodeBlock } from '/components/codeblock.js';
 import Logos from '/dist/logos.esm.js';
 
 export function render(container) {

@@ -1,5 +1,5 @@
 // Terminal Component - Mock command line interaction
-import { createCopyButton } from '/website/lib/ui.js';
+import { createCopyButton } from '/lib/ui.js';
 
 export function renderTerminal(command, outputLines = []) {
   const container = document.createElement('div');

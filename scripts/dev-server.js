@@ -21,8 +21,8 @@ const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   let pathname = parsedUrl.pathname;
 
-  // Resolve file paths relative to root directory to allow website/ to import ../dist/
-  let filePath = path.join(__dirname, '..', pathname);
+  // Serve the website directory as the deployment does.
+  let filePath = path.join(__dirname, '..', 'website', pathname);
 
   // If the path refers to a directory, check if index.html exists in that directory
   fs.stat(filePath, (err, stats) => {

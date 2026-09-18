@@ -1,5 +1,5 @@
 // CodeBlock Component - formats code with line numbers and copy buttons
-import { createCopyButton } from '/website/lib/ui.js';
+import { createCopyButton } from '/lib/ui.js';
 
 export function renderCodeBlock(codeText, language = 'javascript', filename = '') {
   const container = document.createElement('div');

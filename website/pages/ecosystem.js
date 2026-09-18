@@ -1,5 +1,5 @@
 // Ecosystem Product Roadmap Page Component
-import { createInteractiveCard } from '/website/components/card.js';
+import { createInteractiveCard } from '/components/card.js';
 
 export function render(container) {
   const root = document.createElement('div');

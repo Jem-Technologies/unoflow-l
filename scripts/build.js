@@ -22,6 +22,12 @@ async function build() {
   let esmBundle = '/* unoflow-l — ES Module */\n' + content + '\nexport default Logos;\n';
   fs.writeFileSync(path.join(distDir, 'logos.esm.js'), esmBundle);
 
+  const websiteDistDir = path.join(__dirname, '..', 'website', 'dist');
+  if (!fs.existsSync(websiteDistDir)) {
+    fs.mkdirSync(websiteDistDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(websiteDistDir, 'logos.esm.js'), esmBundle);
+
   // 3. CommonJS Bundle (logos.cjs.js)
   let cjsBundle = '/* unoflow-l — CommonJS */\n' + content + '\nmodule.exports = Logos;\n';
   fs.writeFileSync(path.join(distDir, 'logos.cjs.js'), cjsBundle);

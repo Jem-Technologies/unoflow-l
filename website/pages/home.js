@@ -1,7 +1,7 @@
 // Home Page Component
-import { renderTerminal } from '/website/components/terminal.js';
-import { createInteractiveCard } from '/website/components/card.js';
-import { renderCodeBlock } from '/website/components/codeblock.js';
+import { renderTerminal } from '/components/terminal.js';
+import { createInteractiveCard } from '/components/card.js';
+import { renderCodeBlock } from '/components/codeblock.js';
 
 export function render(container) {
   const section = document.createElement('div');

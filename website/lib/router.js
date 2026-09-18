@@ -1,15 +1,15 @@
 // Light SPA History-API Router
 
 const ROUTES = {
-  '/': () => import('/website/pages/home.js'),
-  '/playground': () => import('/website/pages/playground.js'),
-  '/docs': () => import('/website/pages/docs.js'),
-  '/examples': () => import('/website/pages/examples.js'),
-  '/performance': () => import('/website/pages/performance.js'),
-  '/ecosystem': () => import('/website/pages/ecosystem.js'),
-  '/changelog': () => import('/website/pages/changelog.js'),
-  '/showcase': () => import('/website/pages/showcase.js'),
-  '/about': () => import('/website/pages/about.js')
+  '/': () => import('/pages/home.js'),
+  '/playground': () => import('/pages/playground.js'),
+  '/docs': () => import('/pages/docs.js'),
+  '/examples': () => import('/pages/examples.js'),
+  '/performance': () => import('/pages/performance.js'),
+  '/ecosystem': () => import('/pages/ecosystem.js'),
+  '/changelog': () => import('/pages/changelog.js'),
+  '/showcase': () => import('/pages/showcase.js'),
+  '/about': () => import('/pages/about.js')
 };
 
 let mainContainer = null;
@@ -51,7 +51,7 @@ async function handleRoute() {
 
   if (!routeLoader) {
     // 404 handler
-    const notfound = await import('/website/pages/notfound.js');
+    const notfound = await import('/pages/notfound.js');
     renderPage(notfound);
     return;
   }

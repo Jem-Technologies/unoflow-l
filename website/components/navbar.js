@@ -1,5 +1,5 @@
 // Navbar Component
-import { toggleTheme } from '/website/lib/theme.js';
+import { toggleTheme } from '/lib/theme.js';
 
 export function renderNavbar(container) {
   if (!container) return;
