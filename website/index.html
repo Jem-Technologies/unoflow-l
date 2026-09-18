@@ -23,12 +23,12 @@
   </script>
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="/website/styles/variables.css">
-  <link rel="stylesheet" href="/website/styles/base.css">
-  <link rel="stylesheet" href="/website/styles/layout.css">
-  <link rel="stylesheet" href="/website/styles/components.css">
-  <link rel="stylesheet" href="/website/styles/animations.css">
-  <link rel="stylesheet" href="/website/styles/pages.css">
+  <link rel="stylesheet" href="/styles/variables.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/components.css">
+  <link rel="stylesheet" href="/styles/animations.css">
+  <link rel="stylesheet" href="/styles/pages.css">
 </head>
 <body>
   <!-- Global App Layout -->
@@ -45,10 +45,10 @@
 
   <!-- Main SPA Application Shell (ES Module entry point) -->
   <script type="module">
-    import { initRouter } from '/website/lib/router.js';
-    import { initTheme } from '/website/lib/theme.js';
-    import { renderNavbar } from '/website/components/navbar.js';
-    import { renderFooter } from '/website/components/footer.js';
+    import { initRouter } from '/lib/router.js';
+    import { initTheme } from '/lib/theme.js';
+    import { renderNavbar } from '/components/navbar.js';
+    import { renderFooter } from '/components/footer.js';
 
     // Boot App Components
     document.addEventListener('DOMContentLoaded', () => {

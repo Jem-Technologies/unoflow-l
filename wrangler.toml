@@ -1,0 +1,6 @@
+name = "unoflow-l"
+compatibility_date = "2026-09-18"
+
+[assets]
+directory = "./website"
+not_found_handling = "single-page-application"
